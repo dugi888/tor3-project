@@ -16,3 +16,24 @@ the blocks of 8 bits.
 • Compare the size of the compressed file with the size of an mp3 file of
 the same song.
 '''
+from scipy.io.wavfile import read, write
+import io
+import struct
+
+
+def bytes_to_bits_binary(byte_data):
+    bits_data = bin(int.from_bytes(byte_data, byteorder='big'))[2:]
+    return bits_data
+
+with open("song.wav", "rb") as wavfile:
+    wav_byte_array = wavfile.read()
+
+bits_array = bytes_to_bits_binary(wav_byte_array)
+
+#print(bits)
+
+
+with open("song_bits_array.txt", "w") as bits_to_txt:
+    bits_to_txt.write(bits_array)
+
+#print(input_wav)
