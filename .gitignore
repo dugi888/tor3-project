@@ -5,7 +5,7 @@ __pycache__/
 
 # Files
 song_bits_array.txt
-
+song.wav
 
 # C extensions
 *.so
