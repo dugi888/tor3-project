@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Files
+song_bits_array.txt
+
+
 # C extensions
 *.so
 

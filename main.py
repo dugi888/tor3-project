@@ -32,8 +32,8 @@ bits_array = bytes_to_bits_binary(wav_byte_array)
 
 #print(bits)
 
-
-with open("song_bits_array.txt", "w") as bits_to_txt:
-    bits_to_txt.write(bits_array)
+# Write to file if needed but file is too long
+#with open("song_bits_array.txt", "w") as bits_to_txt:
+#   bits_to_txt.write(bits_array)
 
 #print(input_wav)
