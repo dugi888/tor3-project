@@ -1,5 +1,5 @@
 # TASK
-'''
+"""
 Huffman block coding (song) – GROUP N
 (Mia Miletić, Anja Pijak and Mirko Dugajlić)
 • Find a Waveform Audio File Format (WAVE, or WAV filename
@@ -15,12 +15,7 @@ the blocks of 8 bits.
 • Use the Huffman code to encode the bit representation of the song.
 • Compare the size of the compressed file with the size of an mp3 file of
 the same song.
-'''
-import numpy
-from scipy.io.wavfile import read, write
-import io
-import struct
-import numpy as np
+"""
 
 
 def bytes_to_bits_binary(byte_data):
@@ -40,32 +35,112 @@ def split_to_blocks(bits_data):
 
 
 def extract_frequencies(blocks_array):
-    frequencies = [] * len(blocks_array)
-    for i, block in enumerate(blocks_array):
-        # print(f"Block {i}: {block}")
-        no_of_ones = block.count('1')
-        no_of_zeros = block.count('0')
-        frequencies.append((no_of_ones, no_of_zeros))
-    return frequencies
+    # Initialize an empty dictionary to store the frequency of each block
+    frequency = {}
+
+    # Loop through each block in the blocks_array
+    for block in blocks_array:
+        # If the block is already in the dictionary, increment its count
+        if block in frequency:
+            frequency[block] += 1
+        # If the block is not in the dictionary, add it with a count of 1
+        else:
+            frequency[block] = 1
+
+    # Sort the dictionary by frequency
+    sorted_frequency = dict(sorted(frequency.items(), key=lambda item: item[1], reverse=True))
+    return sorted_frequency
 
 
-def probability(frequencies_tuples):
-    probabilities = [] * len(frequencies_tuples)
-    for freq in frequencies_tuples:
-        probabilities.append((freq[0] / 8, freq[1] / 8))
+'''
+    # Print the frequency of each block
+    for block, count in sorted_frequency.items():
+        print(f"Block: {block}, Frequency: {count}")
+'''
+
+
+def probability(frequencies_dict, blocks_array):
+    probabilities = {}
+    for key, value in frequencies_dict.items():
+        probabilities[key] = (value / len(blocks_array))
+    '''
+    # Print the probability of each block
+    for block, count in probabilities.items():
+        print(f"Block: {block}, Probability: {count}")
+    '''
     return probabilities
 
 
+# Creating tree nodes
+class NodeTree(object):
+
+    def __init__(self, left=None, right=None):
+        self.left = left
+        self.right = right
+
+    def children(self):
+        return (self.left, self.right)
+
+    def nodes(self):
+        return (self.left, self.right)
+
+    def __str__(self):
+        return '%s_%s' % (self.left, self.right)
+
+
+# Main function implementing huffman coding
+def huffman_code_tree(node, left=True, binString=''):
+    if type(node) is str:
+        return {node: binString}
+    (l, r) = node.children()
+    d = dict()
+    d.update(huffman_code_tree(l, True, binString + '0'))
+    d.update(huffman_code_tree(r, False, binString + '1'))
+    return d
+
+
+def huffman(probabilities):
+    nodes = list(probabilities.items())
+
+    while len(nodes) > 1:
+        (key1, c1) = nodes[-1]
+        (key2, c2) = nodes[-2]
+        nodes = nodes[:-2]
+        node = NodeTree(key1, key2)
+        nodes.append((node, c1 + c2))
+
+        nodes = sorted(nodes, key=lambda x: x[1], reverse=True)
+
+    huffmanCode = huffman_code_tree(nodes[0][0])
+
+    print(' Char | Huffman code ')
+    print('----------------------')
+    for char, frequency in probabilities.items():
+        print(' %-4r |%12s' % (char, huffmanCode[char]))
+
+    print(huffmanCode)
+    return huffmanCode
+
+
+def encode(huffman_code, blocks_array):
+    encoding = ""
+    for block in blocks_array:
+        encoding += str(huffman_code[block])
+    return encoding
+
+
 if __name__ == '__main__':
-    with open("song.wav", "rb") as wavfile:
+    with open("star.wav", "rb") as wavfile:
         wav_byte_array = wavfile.read()
 
     bits_array = bytes_to_bits_binary(wav_byte_array)
     bit_blocks = split_to_blocks(bits_array)
-    frequencies = extract_frequencies(bit_blocks)  # This variable is an array of tuples for some i-th element of
-    # bit_blocks array there is corresponding tuple of (number of ones, number of zeros) in frequencies
-    probabilities = probability(frequencies)  # Same as for frequencies but this gives probabilities ->
-    # i.e. number of  ones / 8
+    frequencies = extract_frequencies(bit_blocks)  # Dictionary (block, freq_of_block)
+    probabilities = probability(frequencies, bit_blocks)  # Dictionary(block, freq_of_block/num_of_blocks)
+    huffman_code = huffman(probabilities)
+    encoding = encode(huffman_code, bit_blocks)
+    print(len(encoding))
+    print(len(bits_array))
     print("1")
 
 # Write to file if needed but file is too long
