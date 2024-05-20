@@ -6,6 +6,8 @@ __pycache__/
 # Files
 song_bits_array.txt
 song.wav
+song1.wav
+star.wav
 
 # C extensions
 *.so
