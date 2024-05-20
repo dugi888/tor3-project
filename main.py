@@ -16,24 +16,37 @@ the blocks of 8 bits.
 • Compare the size of the compressed file with the size of an mp3 file of
 the same song.
 '''
+import numpy
 from scipy.io.wavfile import read, write
 import io
 import struct
+import numpy as np
 
 
 def bytes_to_bits_binary(byte_data):
     bits_data = bin(int.from_bytes(byte_data, byteorder='big'))[2:]
     return bits_data
 
-with open("song.wav", "rb") as wavfile:
-    wav_byte_array = wavfile.read()
+def split_to_blocks(bits_data):
+    chunks, chunk_size = len(bits_data), 8
+    num_blocks = chunks // chunk_size
+    blocks_array = [''] * (num_blocks+1)
+    j = 0
+    for i in range(0, chunks, chunk_size):
+        blocks_array[j] = bits_data[i:i+chunk_size]
+        j = j + 1
+    return blocks_array
 
-bits_array = bytes_to_bits_binary(wav_byte_array)
 
-#print(bits)
+if __name__ == '__main__':
+    with open("song.wav", "rb") as wavfile:
+        wav_byte_array = wavfile.read()
+
+    bits_array = bytes_to_bits_binary(wav_byte_array)
+    bit_blocks = split_to_blocks(bits_array)
+
+    print("1")
 
 # Write to file if needed but file is too long
-#with open("song_bits_array.txt", "w") as bits_to_txt:
+# with open("song_bits_array.txt", "w") as bits_to_txt:
 #   bits_to_txt.write(bits_array)
-
-#print(input_wav)
