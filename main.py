@@ -113,12 +113,12 @@ def huffman(probabilities):
 
     huffmanCode = huffman_code_tree(nodes[0][0])
 
-    print(' Char | Huffman code ')
-    print('----------------------')
-    for char, frequency in probabilities.items():
-        print(' %-4r |%12s' % (char, huffmanCode[char]))
+   # print(' Char | Huffman code ')
+   # print('----------------------')
+    ##for char, frequency in probabilities.items():
+    ##    print(' %-4r |%12s' % (char, huffmanCode[char]))
 
-    print(huffmanCode)
+    ##print(huffmanCode)
     return huffmanCode
 
 
@@ -129,19 +129,36 @@ def encode(huffman_code, blocks_array):
     return encoding
 
 
+def bits_to_mb(bits):
+    bytes_in_bit = 1 / 8
+    kb_in_byte = 1 / 1024
+    mb_in_kb = 1 / 1024
+    conversion_factor = bytes_in_bit * kb_in_byte * mb_in_kb
+    # Convert bits to MB
+    mb = bits * conversion_factor
+    return mb
+
 if __name__ == '__main__':
-    with open("star.wav", "rb") as wavfile:
+    song_name = "sine-wave.wav"
+    with open(song_name, "rb") as wavfile:
         wav_byte_array = wavfile.read()
 
+    print("Getting bits")
     bits_array = bytes_to_bits_binary(wav_byte_array)
+    print("Splitting to blocks")
     bit_blocks = split_to_blocks(bits_array)
+    print("Getting frequencies")
     frequencies = extract_frequencies(bit_blocks)  # Dictionary (block, freq_of_block)
+    print("Getting probabilities")
     probabilities = probability(frequencies, bit_blocks)  # Dictionary(block, freq_of_block/num_of_blocks)
+    print("Making Huffman code")
     huffman_code = huffman(probabilities)
-    encoding = encode(huffman_code, bit_blocks)
-    print(len(encoding))
-    print(len(bits_array))
-    print("1")
+    print("Encoding")
+    encoding = (encode(huffman_code, bit_blocks))
+    print("\n\n --------------------------------- \n\n")
+    print(song_name,":")
+    print("Encoded length: ", bits_to_mb(len(encoding)), " MB")
+    print("WAV length: ", bits_to_mb(len(bits_array)), " MB")
 
 # Write to file if needed but file is too long
 # with open("song_bits_array.txt", "w") as bits_to_txt:

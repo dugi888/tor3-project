@@ -3,12 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Files
-song_bits_array.txt
-song.wav
-song1.wav
-star.wav
-
+# Files and songs
+*.wav
 # C extensions
 *.so
 
