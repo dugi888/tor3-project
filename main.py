@@ -139,7 +139,7 @@ def bits_to_mb(bits):
     return mb
 
 if __name__ == '__main__':
-    song_name = "sine-wave.wav"
+    song_name = "star.wav"
     with open(song_name, "rb") as wavfile:
         wav_byte_array = wavfile.read()
 
